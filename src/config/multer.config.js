@@ -5,8 +5,8 @@ import cloudinary from "./cloudinary.config.js"
 const storage = new CloudinaryStorage({
     cloudinary,
     params: {
-        folder: "profile_images",   // carpeta en cloudinary
-        allowed_formats: ["jpg", "png", "jpeg"],
+        folder: "profile_images",
+        allowed_formats: ["jpg", "png", "jpeg"]
     }
 })
 

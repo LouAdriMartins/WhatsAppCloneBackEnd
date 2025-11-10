@@ -1,5 +1,6 @@
 import UserRepository from "../repositories/user.repository.js"
 import ServerError from "../utils/customError.utils.js"
+import cloudinary from "../config/cloudinary.config.js"
 
 class UserService {
     // Buscar usuario por email o teléfono
@@ -44,6 +45,33 @@ class UserService {
         })
     }
 
+    static async removeProfileImage(user_id) {
+        const user = await UserRepository.getById(user_id)
+        if (!user) {
+            throw new ServerError(404, "Usuario no encontrado")
+        }
+        // Si tenía imagen, borramos de Cloudinary
+        if (user.profile_image_url) {
+            const public_id = user.profile_image_url
+                .split("/")
+                .pop()
+                .split(".")[0]
+            await cloudinary.uploader.destroy(`profile_images/${public_id}`)
+        }
+        // Seteamos en null
+        const updated_user = await UserRepository.updateById(user_id, {
+            profile_image_url: null
+        })
+        return updated_user
+    }
+
+    static async updateUser(user_id, new_values) {
+        const updated = await UserRepository.updateById(user_id, new_values)
+        if (!updated) {
+            throw new ServerError(404, "No se pudo actualizar el usuario")
+        }
+        return updated
+    }
 }
 
 export default UserService

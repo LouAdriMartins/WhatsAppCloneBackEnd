@@ -27,12 +27,7 @@ class UserRepository {
     }
 
     static async updateById(user_id, new_values) {
-        const user_updated = await Users.findByIdAndUpdate(
-            user_id,
-            new_values,
-            { new: true }
-        )
-        return user_updated
+        return await Users.findByIdAndUpdate(user_id, new_values, { new: true })
     }
 
     static async getByEmail(email) {

@@ -12,11 +12,15 @@ router.get("/search", UserController.searchUser)
 router.get("/", UserController.getAll)
 
 // Subir imagen de perfil
-router.post(
-    "/upload-photo",
-    AuthMiddleware,
-    upload.single("profile_image"),
-    UserController.uploadProfileImage
-)
+router.post("/upload-photo", AuthMiddleware, upload.single("profile_image"), UserController.uploadProfileImage)
+
+router.delete("/delete-photo", AuthMiddleware, UserController.deletePhoto)
+
+/// Obtener mi info
+router.get("/me", AuthMiddleware, UserController.getMe)
+
+// Editar datos (name, phone…)
+router.put("/me", AuthMiddleware, UserController.updateMe)
+
 
 export default router
