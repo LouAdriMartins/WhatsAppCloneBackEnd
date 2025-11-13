@@ -1,4 +1,3 @@
-// src/controllers/contact.controller.js
 import ContactService from "../services/contact.service.js"
 import ServerError from "../utils/customError.utils.js"
 
@@ -81,6 +80,23 @@ class ContactController {
                 ok: false,
                 status: error.status || 500,
                 message: error.message
+            })
+        }
+    }
+
+    static async getByUserId(req, res) {
+        try {
+            const { contact_user_id } = req.params
+            const owner_user_id = req.user.user_id
+            const contact = await ContactService.getByUserId(
+                owner_user_id,
+                contact_user_id
+            )
+            return res.status(200).json({ data: contact })
+        } catch (error) {
+            console.error(error)
+            return res.status(error.status || 500).json({
+                message: error.message || "Error obteniendo contacto"
             })
         }
     }

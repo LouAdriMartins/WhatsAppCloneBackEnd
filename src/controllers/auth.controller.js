@@ -7,7 +7,6 @@ class AuthController {
         try {
             const { name, email, password } = request.body
             console.log(request.body)
-
             if (!name?.trim()) {
                 throw new ServerError(400, 'Debes enviar un nombre válido')
             }
@@ -17,9 +16,7 @@ class AuthController {
             if (!password || password.length < 8) {
                 throw new ServerError(400, 'La contraseña debe tener al menos 8 caracteres')
             }
-
             await AuthService.register(name, email, password)
-
             response.status(201).json({
                 ok: true,
                 status: 201,

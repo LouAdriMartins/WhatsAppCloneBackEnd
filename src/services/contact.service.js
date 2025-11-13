@@ -1,7 +1,8 @@
 import ContactRepository from "../repositories/contact.repository.js"
 import UserRepository from "../repositories/user.repository.js"
+import ChatRepository from "../repositories/chat.repository.js"
+import MessageRepository from "../repositories/message.repository.js"
 import ServerError from "../utils/customError.utils.js"
-
 class ContactService {
     static async createContact({ owner_user_id, name, contact_email, phone_number }) {
         if (!owner_user_id || !name?.trim() || !contact_email?.trim()) {
@@ -83,6 +84,69 @@ class ContactService {
             throw new ServerError(404, "No se pudo actualizar el estado de bloqueo")
         }
         return updated
+    }
+
+    // Manejo de lista de contactos en pantalla principal
+    static async getContactsByUser(owner_user_id, searchTerm = "") {
+        if (!owner_user_id) {
+            throw new ServerError(400, "Falta owner_user_id")
+        }
+        // obtener contactos base
+        const baseContacts = searchTerm?.trim()
+            ? await ContactRepository.searchContacts(owner_user_id, searchTerm)
+            : await ContactRepository.getContactsByUser(owner_user_id)
+        const enriched = await Promise.all(
+            baseContacts.map(async (c) => {
+                const chat = await ChatRepository.findChatBetween(
+                    owner_user_id,
+                    c.contact_user_id
+                )
+                let unreadCount = 0
+                let lastMessage = null
+                let chatId = null
+                if (chat) {
+                    chatId = chat._id
+                    lastMessage = chat.lastMessage
+                        ? {
+                            text: chat.lastMessage.content,
+                            status: chat.lastMessage.status,
+                            createdAt: chat.lastMessage.createdAt
+                        }
+                        : null
+                    if (chat.lastMessage) {
+                        unreadCount = await MessageRepository.countUnread(chat._id, owner_user_id)
+                    }
+                }
+                return {
+                    _id: c._id,
+                    name: c.name,
+                    profile_image_url: c.profile_image_url ?? null,
+                    lastMessage,
+                    unread_messages: unreadCount,
+                    is_archived: false,
+                    chatId,
+                    contact_user_id: c.contact_user_id
+                }
+            })
+        )
+        // NO filtramos por lastMessage aquí:
+        enriched.sort((a, b) => {
+            const ta = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0
+            const tb = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0
+            return tb - ta
+        })
+        return enriched
+    }
+
+    static async getByUserId(owner_user_id, contact_user_id) {
+        const contact = await ContactRepository.findByOwnerAndContactUser(
+            owner_user_id,
+            contact_user_id
+        )
+        if (!contact) {
+            throw new ServerError(404, "Contacto no encontrado")
+        }
+        return contact
     }
 }
 

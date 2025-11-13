@@ -1,20 +1,34 @@
 import express from "express"
 import cors from "cors"
+import http from "http"                  
+import { initSocket } from "./socket.js" 
+
 import connectMongoDB from "./config/mongoDB.config.js"
 import ENVIRONMENT from "./config/environment.config.js"
 import auth_router from "./routes/auth.route.js"
 import contact_router from "./routes/contact.route.js"
 import user_router from "./routes/user.route.js"
-import workspace_router from "./routes/workspace.route.js"
+import chat_router from "./routes/chat.route.js"
+import message_router from "./routes/message.route.js"
 import authMiddleware from "./middleware/auth.middleware.js"
 
 // ================== CONFIGURACIÓN INICIAL ==================
 connectMongoDB()
-
 const app = express()
 
 // ================== MIDDLEWARES GLOBALES ==================
-app.use(cors())
+app.use(
+    cors({
+        origin: ENVIRONMENT.URL_FRONT,
+        credentials: true,
+    })
+)
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Credentials", "true")
+    next()
+})
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -27,7 +41,7 @@ app.get("/api/ping", (req, res) => {
     res.send({ ok: true, message: "pong" })
 })
 
-// Rutas de autenticación (registro/login/verificación)
+// Rutas de autenticación
 app.use("/api/auth", auth_router)
 
 // ================== RUTAS PROTEGIDAS ==================
@@ -42,10 +56,19 @@ app.use("/api/users", user_router)
 // Rutas de contactos
 app.use("/api/contacts", contact_router)
 
-// Rutas de workspaces
-app.use("/api/workspaces", workspace_router)
+// Rutas de chats
+app.use("/api/chats", chat_router)
 
-// ================== SERVIDOR ==================
-app.listen(ENVIRONMENT.PORT, () => {
+// Rutas de mensajes
+app.use("/api/messages", message_router)
+
+
+// ================== SERVIDOR HTTP + SOCKET ==================
+const server = http.createServer(app)  // servidor base
+initSocket(server)                     // inicializa socket.io sobre ese server
+
+
+// ================== SERVIDOR ESCUCHANDO ==================
+server.listen(ENVIRONMENT.PORT, () => {
     console.log(`Servidor corriendo en ${ENVIRONMENT.URL_API}`)
 })

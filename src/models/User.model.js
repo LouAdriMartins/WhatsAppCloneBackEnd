@@ -22,6 +22,17 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        info: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+        phone_number: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
         verified_email: {
             type: Boolean,
             default: false,

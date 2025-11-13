@@ -43,7 +43,9 @@ class UserController {
     static async uploadProfileImage(req, res) {
         try {
             const user_id = req.user?.user_id
-            if (!user_id) throw new ServerError(401, "No autorizado")
+            if (!user_id) {
+                throw new ServerError(401, "No autorizado")
+            }
             if (!req.file) {
                 throw new ServerError(400, "No se recibió ninguna imagen")
             }
@@ -68,7 +70,9 @@ class UserController {
     static async deletePhoto(req, res) {
         try {
             const user_id = req.user?.user_id
-            if (!user_id) throw new ServerError(401, "No autorizado")
+            if (!user_id) {
+                throw new ServerError(401, "No autorizado")
+            }
             const updated = await UserService.removeProfileImage(user_id)
             return res.status(200).json({
                 ok: true,

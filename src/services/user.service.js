@@ -66,10 +66,19 @@ class UserService {
     }
 
     static async updateUser(user_id, new_values) {
-        const updated = await UserRepository.updateById(user_id, new_values)
+        const allowedFields = ["name", "info", "phone_number", "profile_image_url"]
+        const filtered = {}
+        for (const key of allowedFields) {
+            if (new_values[key] !== undefined) {
+                filtered[key] = new_values[key]
+            }
+        }
+        filtered.modified_at = new Date()
+        const updated = await UserRepository.updateById(user_id, filtered)
         if (!updated) {
             throw new ServerError(404, "No se pudo actualizar el usuario")
         }
+        new_values.modified_at = new Date()
         return updated
     }
 }
