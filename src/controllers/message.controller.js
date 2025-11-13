@@ -26,7 +26,17 @@ class MessageController {
         try {
             const { chatId } = req.params
             const messages = await MessageService.getMessages(chatId)
-            return res.status(200).json(messages)
+            const formatted = messages.map(m => ({
+                _id: m._id,
+                chatId: m.chatId,
+                sender: m.sender,
+                content: m.content,            
+                deletedAt: m.deletedAt,        
+                deletedBy: m.deletedBy,
+                status: m.status,
+                createdAt: m.createdAt,
+            }))
+            return res.status(200).json(formatted)
         } catch (e) {
             next(e)
         }

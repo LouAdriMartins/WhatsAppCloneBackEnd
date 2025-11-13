@@ -1,4 +1,4 @@
-import Message from "../models/message.model.js"
+import Message from "../models/Message.model.js"
 
 class MessageRepository {
     static create({ chatId, sender, content }) {
@@ -11,7 +11,7 @@ class MessageRepository {
             .sort({ createdAt: 1 })
     }
 
-    static deleteMessage(messageId, userId) {
+    static softDelete(messageId, userId) {
         return Message.findByIdAndUpdate(
             messageId,
             {
@@ -22,6 +22,11 @@ class MessageRepository {
             { new: true }
         )
     }
+
+    static hardDelete(messageId) {
+        return Message.findByIdAndDelete(messageId)
+    }
+
 
     static updateStatus(messageId, status) {
         return Message.findByIdAndUpdate(messageId, { status }, { new: true })

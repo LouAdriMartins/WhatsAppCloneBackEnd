@@ -1,5 +1,5 @@
 import Chat from "../models/chat.model.js"
-import MessageRepository from "./message.repository.js"
+import Message from "../models/Message.model.js"
 
 class ChatRepository {
     static create(data) {
@@ -15,7 +15,10 @@ class ChatRepository {
     static getAllForUser(userId) {
         return Chat.find({ users: userId })
             .populate("users", "name email profile_image_url")
-            .populate("lastMessage")
+            .populate({
+                path: "lastMessage",
+                select: "content createdAt status deletedAt deletedBy"
+            })
             .sort({ updatedAt: -1 })
     }
 
@@ -39,21 +42,33 @@ class ChatRepository {
     }
 
     static async setLastMessage(chatId, messageId) {
-        // Traemos el mensaje real (con su status correcto)
-        const msg = await MessageRepository.findById(messageId)
-        if (!msg) return
         return Chat.findByIdAndUpdate(
             chatId,
-            {
-                lastMessage: {
-                    _id: msg._id,
-                    content: msg.content,
-                    status: msg.status,
-                    createdAt: msg.createdAt
-                }
-            },
+            { lastMessage: messageId },
             { new: true }
-        ).populate("users", "name email profile_image_url")
+        )
+        .populate({
+            path: "lastMessage",
+            select: "content createdAt status deletedAt deletedBy"
+        })
+    }
+
+    static async updateLastMessageAfterChange(chatId) {
+        const lastMsg = await Message.find({ chatId })
+            .sort({ createdAt: -1 })
+            .limit(1)
+        const newLastMessageId = lastMsg.length > 0
+            ? lastMsg[0]._id
+            : null
+        return Chat.findByIdAndUpdate(
+            chatId,
+            { lastMessage: newLastMessageId },
+            { new: true }
+        )
+        .populate({
+            path: "lastMessage",
+            select: "content createdAt status deletedAt deletedBy"
+        })
     }
 }
 

@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "046aa962-02d3-41b1-8490-ccb5c7238fc0",
+		"name": "API_2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48307723",
+		"_collection_link": "https://lourdesamartinsr-6061496.postman.co/workspace/Prueba-de-API~c63e2999-e12a-4740-bfa8-112a8d82119f/collection/48307723-046aa962-02d3-41b1-8490-ccb5c7238fc0?action=share&source=collection_link&creator=48307723"
+	},
+	"item": [
+		{
+			"name": "/api/auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Profile_Image",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete-photo",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/contact",
+			"item": [
+				{
+					"name": "create_contact",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "consulta_contactos",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/users",
+			"item": [
+				{
+					"name": "search_contact_by_email",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "search_all_contacts_by_email",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/chats",
+			"item": [
+				{
+					"name": "mensajes",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "chat users",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

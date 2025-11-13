@@ -59,23 +59,32 @@ class MessageService {
         if (message.sender.toString() !== userId.toString()) {
             throw new ServerError(403, "No autorizado para borrar este mensaje")
         }
-        const updated = await MessageRepository.deleteMessage(messageId, userId)
-        await ChatRepository.setLastMessage(message.chatId, updated._id)
-        return { 
-            ok: true, 
-            messageId, 
-            chatId: message.chatId, 
-            softDeleted: true 
+        const chatId = message.chatId
+        // === SOFT DELETE ===
+        if (!message.deletedAt) {
+            const updated = await MessageRepository.softDelete(messageId, userId)
+            await ChatRepository.setLastMessage(chatId, updated._id)
+            return { ok: true, softDeleted: true, messageId, chatId }
         }
+        // === HARD DELETE ===
+        await MessageRepository.hardDelete(messageId)
+        // buscar el mensaje anterior
+        await ChatRepository.updateLastMessageAfterChange(chatId)
+        return { ok: true, hardDeleted: true, messageId, chatId }
     }
 
-    static markDelivered(messageId) {
-        return MessageRepository.updateStatus(messageId, "delivered")
+    static async markDelivered(messageId) {
+        const msg = await MessageRepository.updateStatus(messageId, "delivered")
+        if (!msg) throw new ServerError(404, "Mensaje no encontrado")
+        return msg
     }
 
-    static markRead(messageId) {
-        return MessageRepository.updateStatus(messageId, "read")
+    static async markRead(messageId) {
+        const msg = await MessageRepository.updateStatus(messageId, "read")
+        if (!msg) throw new ServerError(404, "Mensaje no encontrado")
+        return msg
     }
+
 
     static searchMessages(chatId, query) {
         return MessageRepository.searchInChat(chatId, query)

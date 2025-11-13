@@ -50,6 +50,12 @@ app.get("/ruta-protegida", authMiddleware, (req, res) => {
     res.send({ ok: true })
 })
 
+
+app.use((req, res, next) => {
+    console.log(req.method, req.originalUrl)
+    next()
+})
+
 // Rutas de usuarios
 app.use("/api/users", user_router)
 
