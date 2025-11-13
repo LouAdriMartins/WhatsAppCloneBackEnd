@@ -1,4 +1,4 @@
-import Chat from "../models/chat.model.js"
+import Chat from "../models/Chat.model.js"
 import Message from "../models/Message.model.js"
 
 class ChatRepository {
