@@ -3,10 +3,12 @@ import ENVIRONMENT from './environment.config.js'
 
 const transporter = nodemailer.createTransport(
     {
-        service: 'gmail',
+        host: "smtp-relay.brevo.com",
+        port: 587,
+        secure: false,
         auth: {
-            user: ENVIRONMENT.GMAIL_USER,
-            pass: ENVIRONMENT.GMAIL_PASSWORD
+            user: ENVIRONMENT.BREVO_EMAIL,
+            pass: ENVIRONMENT.BREVO_API_KEY
         }
     }
 )

@@ -12,6 +12,8 @@ const ENVIRONMENT = {
     URL_API: process.env.URL_API,
     PORT: process.env.PORT,
     URL_FRONT: process.env.URL_FRONT,
+    BREVO_EMAIL: process.env.BREVO_EMAIL,
+    BREVO_API_KEY: process.env.BREVO_API_KEY
 }
 
 export default ENVIRONMENT
