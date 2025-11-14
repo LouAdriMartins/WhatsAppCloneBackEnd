@@ -13,11 +13,11 @@ class AuthService {
             throw new ServerError(400, "Email ya en uso");
         }
         const password_hashed = await bcrypt.hash(password, 12);
-        const user_created = await UserRepository.createUser(
+        const user_created = await UserRepository.createUser({
             name,
             email,
-            password_hashed
-        );
+            password: password_hashed,
+        })
         const verification_token = jwt.sign(
         {
             email,
