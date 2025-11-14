@@ -8,11 +8,11 @@ import ENVIRONMENT from "../config/environment.config.js";
 class AuthService {
     // ==================== REGISTRO DE USUARIO ====================
     static async register(name, email, password) {
-        const user_found = await UserRepository.getByEmail(email);
+        const user_found = await UserRepository.getByEmail(email)
         if (user_found) {
-            throw new ServerError(400, "Email ya en uso");
+            throw new ServerError(400, "Email ya en uso")
         }
-        const password_hashed = await bcrypt.hash(password, 12);
+        const password_hashed = await bcrypt.hash(password, 12)
         const user_created = await UserRepository.createUser({
             name,
             email,
@@ -28,41 +28,42 @@ class AuthService {
         );
         const verify_link = `${ENVIRONMENT.URL_API}/api/auth/verify-email/${verification_token}`
         try {
-        await transporter.sendMail({
-            from: ENVIRONMENT.GMAIL_USER,
-            to: email,
-            subject: "Verificación de correo electrónico",
-            html: `
-            <div style="font-family:Arial, sans-serif; color:#333">
-                <h2>¡Hola ${name}!</h2>
-                <p>Gracias por registrarte. Para activar tu cuenta, hacé clic en el siguiente enlace:</p>
-                <p>
-                <a href="${verify_link}"
-                    style="display:inline-block;background:#5865F2;color:white;padding:10px 20px;
-                            text-decoration:none;border-radius:6px;margin-top:10px;">
-                    Verificar mi cuenta
-                </a>
-                </p>
-                <p>Si no creaste esta cuenta, ignora este mensaje.</p>
-            </div>
-            `,
-        });
+            await transporter.sendMail({
+                from: ENVIRONMENT.GMAIL_USER,
+                to: email,
+                subject: "Verificación de correo electrónico",
+                html: `
+                <div style="font-family:Arial, sans-serif; color:#333">
+                    <h2>¡Hola ${name}!</h2>
+                    <p>Gracias por registrarte. Para activar tu cuenta, hacé clic en el siguiente enlace:</p>
+                    <p>
+                    <a href="${verify_link}"
+                        style="display:inline-block;background:#5865F2;color:white;padding:10px 20px;
+                                text-decoration:none;border-radius:6px;margin-top:10px;">
+                        Verificar mi cuenta
+                    </a>
+                    </p>
+                    <p>Si no creaste esta cuenta, ignora este mensaje.</p>
+                </div>
+                `,
+            })
         } catch (error) {
-            throw new ServerError(500, "Error al enviar correo de verificación");
+            console.error("Error enviando mail:", error)
         }
+        return user_created
     }
 
     // ==================== VERIFICACIÓN DE EMAIL ====================
     static async verifyEmail(verification_token) {
         try {
-        const payload = jwt.verify(
-            verification_token,
-            ENVIRONMENT.JWT_SECRET_KEY
-        );
-        await UserRepository.updateById(payload.user_id, {
-            verified_email: true,
-        });
-        return;
+            const payload = jwt.verify(
+                verification_token,
+                ENVIRONMENT.JWT_SECRET_KEY
+            )
+            await UserRepository.updateById(payload.user_id, {
+                verified_email: true,
+            })
+            return
         } catch (error) {
             if (error instanceof jwt.JsonWebTokenError) {
                 throw new ServerError(400, "Token inválido o expirado");
@@ -73,19 +74,19 @@ class AuthService {
 
     // ==================== LOGIN DE USUARIO ====================
     static async login(email, password) {
-        const user = await UserRepository.getByEmail(email);
+        const user = await UserRepository.getByEmail(email)
         if (!user) {
-            throw new ServerError(404, "Email no registrado");
+            throw new ServerError(404, "Email no registrado")
         }
         if (!user.active) {
-            throw new ServerError(403, "Usuario deshabilitado");
+            throw new ServerError(403, "Usuario deshabilitado")
         }
         if (user.verified_email === false) {
-            throw new ServerError(401, "Email no verificado");
+            throw new ServerError(401, "Email no verificado")
         }
-        const is_same_password = await bcrypt.compare(password, user.password);
+        const is_same_password = await bcrypt.compare(password, user.password)
         if (!is_same_password) {
-            throw new ServerError(401, "Contraseña incorrecta");
+            throw new ServerError(401, "Contraseña incorrecta")
         }
         const authorization_token = jwt.sign(
         {
@@ -96,8 +97,8 @@ class AuthService {
         },
         ENVIRONMENT.JWT_SECRET_KEY,
         { expiresIn: "7d" }
-        );
-        return { authorization_token };
+        )
+        return { authorization_token }
     }
 
     // ==================== RECUPERACIÓN DE CONTRASEÑA ====================
