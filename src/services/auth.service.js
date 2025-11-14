@@ -29,7 +29,7 @@ class AuthService {
         const verify_link = `${ENVIRONMENT.URL_API}/api/auth/verify-email/${verification_token}`
         try {
             await transporter.sendMail({
-                from: ENVIRONMENT.BREVO_EMAIL,
+                from: ENVIRONMENT.GMAIL_USER,
                 to: email,
                 subject: "Verificación de correo electrónico",
                 html: `
@@ -115,7 +115,7 @@ class AuthService {
         const recovery_link = `${ENVIRONMENT.URL_FRONT}/reset-password/${recovery_token}`
         try {
             await transporter.sendMail({
-                from: ENVIRONMENT.BREVO_EMAIL,
+                from: ENVIRONMENT.GMAIL_USER,
                 to: email,
                 subject: "Recuperación de contraseña",
                 html: `
