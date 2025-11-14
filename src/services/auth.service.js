@@ -27,7 +27,7 @@ class AuthService {
         ENVIRONMENT.JWT_SECRET_KEY,
         { expiresIn: "1d" }
         );
-        const verify_link = `${ENVIRONMENT.URL_FRONT}/api/auth/verify-email/${verification_token}`
+        const verify_link = `${ENVIRONMENT.URL_FRONT}/?verifyToken=${verification_token}`
         try {
             const brevoAPI = new TransactionalEmailsApi()
             brevoAPI.setApiKey(
