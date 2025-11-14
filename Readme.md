@@ -34,6 +34,23 @@ Usado para subir y almacenar fotos de perfil del usuario.
 - Dotenv
 Para manejo seguro de variables de entorno (PORT, MONGO_URI, JWT_SECRET).
 
+## Ejemplo de .env usado:
+MONGO_DB_CONNECTION_STRING=mongodb+srv://WhatsAppClone:xxxxxxxxxxx@cluster0.fvdue4s.mongodb.net/WhatsAppClone
+JWT_SECRET_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+URL_API=https://whatsappclonebackend-4hmx.onrender.com
+URL_FRONT=https://whatsappclonefrontend.onrender.com
+CLOUDINARY_NAME=xxxxxxxxxxx
+CLOUDINARY_KEY=xxxxxxxxxxx
+CLOUDINARY_SECRET=xxxxxxxxxxx
+BREVO_API_KEY=xxxxxxxxxxx
+BREVO_EMAIL=lourdesadrianamartins0@gmail.com
+
+El backend está desplegado en Render, y esta plataforma no permite conexiones SMTP salientes. Debido a esto, los correos enviados mediante Nodemailer + Gmail SMTP no llegaban, ya que:
+- Render bloquea el protocolo SMTP por seguridad.
+- Gmail también bloquea peticiones no seguras o provenientes de servidores desconocidos.
+
+Para solucionar este problema, implementé Brevo como proveedor de correo, utilizando su API HTTP, que funciona correctamente en Render ya que no depende de SMTP. Esto implicó reemplazar el transporte de nodemailer por la librería oficial de Brevo: "@getbrevo/brevo"
+
 ## Conclusión
 
 Este backend constituye una API completa y funcional para un clon realista de WhatsApp Web. Incluye autenticación segura, gestión de contactos, mensajes, chats, fotos de perfil y comunicación en tiempo real mediante eventos sincronizados.
