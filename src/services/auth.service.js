@@ -1,9 +1,13 @@
-import transporter from "../config/mailer.config.js";
-import UserRepository from "../repositories/user.repository.js";
-import ServerError from "../utils/customError.utils.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import ENVIRONMENT from "../config/environment.config.js";
+// import transporter from "../config/mailer.config.js";
+import {
+    TransactionalEmailsApi,
+    TransactionalEmailsApiApiKeys,
+} from "@getbrevo/brevo"
+import UserRepository from "../repositories/user.repository.js"
+import ServerError from "../utils/customError.utils.js"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import ENVIRONMENT from "../config/environment.config.js"
 
 class AuthService {
     // ==================== REGISTRO DE USUARIO ====================
@@ -28,27 +32,35 @@ class AuthService {
         );
         const verify_link = `${ENVIRONMENT.URL_API}/api/auth/verify-email/${verification_token}`
         try {
-            await transporter.sendMail({
-                from: `"Lourdes Dev" <${ENVIRONMENT.BREVO_EMAIL}>`,
-                to: email,
+            const brevoAPI = new TransactionalEmailsApi()
+            brevoAPI.setApiKey(
+                TransactionalEmailsApiApiKeys.apiKey,
+                ENVIRONMENT.BREVO_SMTP_KEY
+            )
+            await brevoAPI.sendTransacEmail({
+                sender: {
+                    email: ENVIRONMENT.BREVO_EMAIL,
+                    name: "Lourdes Dev"
+                },
+                to: [{ email }],
                 subject: "Verificación de correo electrónico",
-                html: `
-                <div style="font-family:Arial, sans-serif; color:#333">
-                    <h2>¡Hola ${name}!</h2>
-                    <p>Gracias por registrarte. Para activar tu cuenta, hacé clic en el siguiente enlace:</p>
-                    <p>
-                    <a href="${verify_link}"
-                        style="display:inline-block;background:#5865F2;color:white;padding:10px 20px;
-                                text-decoration:none;border-radius:6px;margin-top:10px;">
-                        Verificar mi cuenta
-                    </a>
-                    </p>
-                    <p>Si no creaste esta cuenta, ignora este mensaje.</p>
-                </div>
-                `,
+                htmlContent: `
+                    <div style="font-family:Arial, sans-serif; color:#333">
+                        <h2>¡Hola ${name}!</h2>
+                        <p>Gracias por registrarte. Para activar tu cuenta, hacé clic en el siguiente enlace:</p>
+                        <p>
+                        <a href="${verify_link}"
+                            style="display:inline-block;background:#5865F2;color:white;padding:10px 20px;
+                                    text-decoration:none;border-radius:6px;margin-top:10px;">
+                            Verificar mi cuenta
+                        </a>
+                        </p>
+                        <p>Si no creaste esta cuenta, ignora este mensaje.</p>
+                    </div>
+                `
             })
         } catch (error) {
-            console.error("Error enviando mail:", error)
+            console.error("Error enviando mail por API Brevo:", error)
         }
         return user_created
     }
@@ -114,11 +126,19 @@ class AuthService {
         )
         const recovery_link = `${ENVIRONMENT.URL_FRONT}/reset-password/${recovery_token}`
         try {
-            await transporter.sendMail({
-                from: `"Lourdes Dev" <${ENVIRONMENT.BREVO_EMAIL}>`,
-                to: email,
+            const brevoAPI = new TransactionalEmailsApi()
+            brevoAPI.setApiKey(
+                TransactionalEmailsApiApiKeys.apiKey,
+                ENVIRONMENT.BREVO_SMTP_KEY
+            )
+            await brevoAPI.sendTransacEmail({
+                sender: {
+                    email: ENVIRONMENT.BREVO_EMAIL,
+                    name: "Lourdes Dev"
+                },
+                to: [{ email }],
                 subject: "Recuperación de contraseña",
-                html: `
+                htmlContent: `
                     <div style="font-family:Arial,sans-serif;color:#333">
                         <h2>Recuperar contraseña</h2>
                         <p>Hacé clic en el siguiente enlace para restablecer tu contraseña. Este enlace expirará en 15 minutos.</p>
@@ -132,7 +152,7 @@ class AuthService {
                 `
             })
         } catch (error) {
-            console.error("Error enviando email de recuperación:", error)
+            console.error("Error enviando email de recuperación por API Brevo:", error)
             throw new ServerError(500, "No se pudo enviar el correo de recuperación")
         }
         return { message: "Correo de recuperación enviado" }
