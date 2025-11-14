@@ -12,7 +12,7 @@ const ENVIRONMENT = {
     URL_FRONT: process.env.URL_FRONT,
     BREVO_USER: process.env.BREVO_USER,
     BREVO_EMAIL: process.env.BREVO_EMAIL,
-    BREVO_SMTP_KEY: process.env.BREVO_API_KEY
+    BREVO_SMTP_KEY: process.env.BREVO_SMTP_KEY
 }
 
 export default ENVIRONMENT
