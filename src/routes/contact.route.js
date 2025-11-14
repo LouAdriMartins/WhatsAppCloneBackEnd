@@ -15,6 +15,6 @@ contact_router.patch("/block/:contact_id", authMiddleware, ContactController.tog
 contact_router.patch("/:contact_id", authMiddleware, ContactController.update)
 contact_router.delete("/:contact_id", authMiddleware, ContactController.delete)
 
-contact_router.get("/:owner_user_id", authMiddleware, ContactController.getAll)
+// contact_router.get("/:owner_user_id", authMiddleware, ContactController.getAll)
 
 export default contact_router
