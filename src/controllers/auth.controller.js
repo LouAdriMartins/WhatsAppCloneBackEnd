@@ -82,7 +82,7 @@ class AuthController {
             const { verification_token } = request.params
             await AuthService.verifyEmail(verification_token)
             // Redirigir al login del front (ruta "/")
-            return response.redirect(`${ENVIRONMENT.URL_FRONT}/?verified=true`)
+            return response.redirect(`${ENVIRONMENT.URL_FRONT}/`)
         } 
         catch (error) {
             console.error(error)
