@@ -10,9 +10,8 @@ const ENVIRONMENT = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
     URL_API: process.env.URL_API,
     URL_FRONT: process.env.URL_FRONT,
-    BREVO_USER: process.env.BREVO_USER,
     BREVO_EMAIL: process.env.BREVO_EMAIL,
-    BREVO_SMTP_KEY: process.env.BREVO_SMTP_KEY
+    BREVO_API_KEY: process.env.BREVO_API_KEY
 }
 
 export default ENVIRONMENT
