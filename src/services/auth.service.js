@@ -121,7 +121,7 @@ class AuthService {
             ENVIRONMENT.JWT_SECRET_KEY,
             { expiresIn: "15m" }
         )
-        const recovery_link = `${ENVIRONMENT.URL_FRONT}/reset-password/${recovery_token}`
+        const recovery_link = `${ENVIRONMENT.URL_FRONT}/reset-password?token=${recovery_token}`
         try {
             const brevoAPI = new TransactionalEmailsApi()
             brevoAPI.setApiKey(
